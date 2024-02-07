@@ -21,18 +21,14 @@ import java.text.SimpleDateFormat;
 
 public class ArticleController {
 
-  private Connection connection;
   private EntityManagerFactory entityManagerFactory;
 
-  private MagazineController magazineController = new MagazineController(connection);
-  private AuthorController authorController = new AuthorController(connection);
+  private MagazineController magazineController = new MagazineController();
+  private AuthorController authorController = new AuthorController();
 
-  public ArticleController(Connection connection) {
-    this.connection = connection;
-  }
+  public ArticleController() { }
 
-  public ArticleController(Connection connection, EntityManagerFactory entityManagerFactory) {
-    this.connection = connection;
+  public ArticleController(EntityManagerFactory entityManagerFactory) {
     this.entityManagerFactory = entityManagerFactory;
   }
 

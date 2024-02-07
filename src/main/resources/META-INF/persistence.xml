@@ -5,10 +5,10 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
 
         <properties>
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://192.168.252.6:5432/jpamagazines"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://192.168.22.120:5432/ddbb"/>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-            <property name="javax.persistence.jdbc.user" value="bibliotecari"/>
-            <property name="javax.persistence.jdbc.password" value="1234"/>
+            <property name="javax.persistence.jdbc.user" value="usuario"/>
+            <property name="javax.persistence.jdbc.password" value="password"/>
         </properties>
     </persistence-unit>
 </persistence>
