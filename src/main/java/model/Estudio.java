@@ -1,8 +1,5 @@
 package model;
 
-import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvDate;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;

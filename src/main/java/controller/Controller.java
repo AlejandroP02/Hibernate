@@ -7,18 +7,13 @@ import model.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Scanner;
 
 import com.opencsv.CSVReader;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.schema.TargetType;
 
 import javax.persistence.*;
 
@@ -214,6 +209,21 @@ public class Controller {
             transaction.commit();
         } finally {
 
+        }
+    }
+
+    public void update(String tabla, String columna, String condicion, String update, String columa2, String text) throws SQLException {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+
+            // Ejecutar la consulta SQL nativa
+            Query query = entityManager.createNativeQuery("UPDATE "+tabla+" SET "+columna+" = '"+update+"' WHERE "+columa2+" "+condicion+" "+text);;
+            if (condicion.equals("LIKE")) query = entityManager.createNativeQuery("UPDATE "+tabla+" SET "+columna+" = '"+update+"' WHERE "+columa2+" "+condicion+" '%"+text+"%'");
+            query.executeUpdate();
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

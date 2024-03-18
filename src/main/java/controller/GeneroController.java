@@ -1,12 +1,8 @@
 package controller;
 
-import com.opencsv.bean.CsvToBeanBuilder;
 import model.Genero;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.List;
 
 public class GeneroController {

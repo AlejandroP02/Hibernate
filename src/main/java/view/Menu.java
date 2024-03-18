@@ -59,8 +59,28 @@ public class Menu {
         return (String) c.mostrarTablas().get(c.nextInt());
     }
 
-    public String menuColumnas(){
-        return (String) c.mostrarColumnas(menuTable()).get(c.nextInt());
+    public String menuCondicion(){
+        System.out.println(" \nElige una condición \n");
+
+        System.out.println("1. LIKE");
+        System.out.println("2. =");
+        System.out.println("3. <");
+        System.out.println("4. >");
+        return oCondicion(c.nextInt());
+    }
+
+    public String oCondicion(int o){
+        if(o==1){
+            return "LIKR";
+        }else if(o==2){
+            return "=";
+        }else if(o==3){
+            return "<";
+        }else if(o==4){
+            return ">";
+        }else {
+            return "opcion invalida";
+        }
     }
 
     public String menuColumnas(String tabla){
@@ -126,12 +146,26 @@ public class Menu {
             System.out.println("Pulsa "+ConsoleColors.GREEN+"enter"+ConsoleColors.RESET+" para continuar");
             c.nextLine();
             c.nextLine();
-        }else if(o==9){
-            c.update();
+        }*/else if(o==9){
+            System.out.println("Elige una tabla");
+            String tabla = menuTable();
+            System.out.println("Elige una columna");
+            String columna = menuColumnas(tabla);
+            String condicion = menuCondicion();
+            c.nextLine();
+            System.out.println("Escribe los cambios a realizar");
+            String update=c.nextLine();
+            System.out.println("Elige una columna para la condición");
+            String columna2 = menuColumnas(tabla);
+            c.nextLine();
+            System.out.println("Escribe el texto de la condición");
+            String text = c.nextLine();
+            System.out.println(tabla+", "+columna+", "+condicion+", "+update+", "+columna2+", "+text);
+            c.update(tabla, columna, condicion, update, columna2, text);
             System.out.println("Datos actualizados");
             System.out.println("Pulsa "+ConsoleColors.GREEN+"enter"+ConsoleColors.RESET+" para continuar");
             c.nextLine();
-        }*/else if(o==10){
+        }else if(o==10){
             String tabla = menuTable();
             System.out.println("Introduce la id del elemento");
             int id = c.nextInt();
