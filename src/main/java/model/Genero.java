@@ -107,6 +107,10 @@ public class Genero {
         return series;
     }
 
+    /**
+     * toString de la clase con un limitador.
+     * @return La clase en formato textual
+     */
     @Override
     public String toString() {
         return "Genero{" +

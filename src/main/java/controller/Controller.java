@@ -17,30 +17,68 @@ import com.opencsv.CSVReader;
 
 import javax.persistence.*;
 
-
+/**
+ * Esta clase controla las operaciones principales del programa,
+ * incluida la lectura de datos desde archivos CSV,
+ * la interacción con la base de datos y la gestión de las operaciones CRUD.
+ */
 public class Controller {
+    /**
+     * Lista que contiene los géneros extraídos del CSV.
+     */
     private List<Genero> generos;
+    /**
+     * Lista que contiene los estudios extraídos del CSV.
+     */
     private List<Estudio> estudios;
+    /**
+     * Lista que contiene las series extraídas del CSV.
+     */
     private List<Serie> series;
+    /**
+     * Sirve para interactuar con la base de datos.
+     */
     private EntityManagerFactory entityManagerFactory;
+    /**
+     * Sirve para leer lo que escribe el usuario.
+     */
     private Scanner sc = new Scanner(System.in);
+    /**
+     * Instancia de serieController.
+     */
     private SerieController serieController;
-    private EstuidoController estuidoController;
+    /**
+     * Instancia de estudioController.
+     */
+    private EstudioController estudioController;
+    /**
+     * Instancia de generoController.
+     */
     private GeneroController generoController;
 
+    /**
+     * Constructor de la clase Controller.
+     * @param entityManagerFactory el EntityManagerFactory para interactuar con la base de datos.
+     * @throws CsvValidationException si ocurre un error de validación de CSV.
+     * @throws IOException si ocurre un error de E/S durante la ejecución del programa.
+     */
     public Controller(EntityManagerFactory entityManagerFactory) throws CsvValidationException, IOException {
         generos = new ArrayList<>();
         estudios = new ArrayList<>();
         series = new ArrayList<>();
         this.entityManagerFactory = entityManagerFactory;
         serieController = new SerieController(entityManagerFactory);
-        estuidoController = new EstuidoController(entityManagerFactory);
+        estudioController = new EstudioController(entityManagerFactory);
         generoController = new GeneroController(entityManagerFactory);
         readEstudios();
         readGeneros();
         readSeries();
     }
 
+    /**
+     * Lee los géneros desde un archivo CSV.
+     * @throws FileNotFoundException si no se encuentra el archivo.
+     */
     public void readGeneros() throws FileNotFoundException {
         generos = new CsvToBeanBuilder<Genero>(new FileReader("src/main/resources/generos.csv"))
                 .withType(Genero.class)
@@ -48,6 +86,11 @@ public class Controller {
                 .parse();
     }
 
+    /**
+     * Lee los estudios desde un archivo CSV.
+     * @throws IOException si ocurre un error de E/S durante la lectura del archivo.
+     * @throws CsvValidationException si ocurre un error de validación de CSV.
+     */
     public void readEstudios() throws IOException, CsvValidationException {
         CSVReader reader = new CSVReader(new FileReader("src/main/resources/estudios.csv"));
         String[] record = null;
@@ -65,6 +108,11 @@ public class Controller {
         reader.close();
     }
 
+    /**
+     * Lee las series desde un archivo CSV.
+     * @throws IOException si ocurre un error de E/S durante la lectura del archivo.
+     * @throws CsvValidationException si ocurre un error de validación de CSV.
+     */
     public void readSeries() throws IOException, CsvValidationException {
         CSVReader reader = new CSVReader(new FileReader("src/main/resources/series.csv"));
         String[] record = null;
@@ -107,6 +155,10 @@ public class Controller {
         reader.close();
     }
 
+    /**
+     * Muestra las tablas disponibles en la base de datos.
+     * @return una lista de nombres de tablas disponibles.
+     */
     public List<Object> mostrarTablas(){
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
@@ -130,6 +182,11 @@ public class Controller {
         }
     }
 
+    /**
+     * Muestra las columnas de una tabla específica.
+     * @param tabla el nombre de la tabla.
+     * @return una lista de nombres de columnas de la tabla especificada.
+     */
     public List<Object> mostrarColumnas(String tabla){
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
@@ -153,6 +210,13 @@ public class Controller {
         }
     }
 
+    /**
+     * Realiza una consulta para buscar texto específico en una columna de una entidad.
+     * @param entityClass la clase de la entidad.
+     * @param columna el nombre de la columna en la que se realizará la búsqueda.
+     * @param text el texto a buscar.
+     * @param <T> el tipo genérico de la entidad.
+     */
     public <T> void selectText(Class<T> entityClass, String columna, String text) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
@@ -175,6 +239,86 @@ public class Controller {
         entityManager.getTransaction().commit();
     }
 
+    /**
+     * Realiza una consulta para buscar registros que cumplan una condición específica en una tabla de la base de datos.
+     * @param tabla     el nombre de la tabla en la que se realizará la búsqueda.
+     * @param condicion la condición a aplicar en la búsqueda (por ejemplo, "LIKE", "=", "<").
+     * @param columna2  el nombre de la columna en la que se aplicará la condición.
+     * @param text      el texto que se comparará con los registros en la columna.
+     */
+    public void selectCondicion(String tabla, String condicion, String columna2, String text){
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+
+            // Ejecutar la consulta SQL nativa
+            Query query;
+            if (condicion.equals("LIKE")) {
+                query = entityManager.createNativeQuery("SELECT * FROM " + tabla + " WHERE " + columna2 + " " + condicion + " '%" + text + "%'");
+            } else {
+                query = entityManager.createNativeQuery("SELECT * FROM " + tabla + " WHERE " + columna2 + " " + condicion + " ?");
+                query.setParameter(1, text);
+            }
+
+            List<Object[]> results = query.getResultList();
+            if (!results.isEmpty()) {
+                for (Object[] result : results) {
+                    for (Object a: result){
+                        if (a==null)a="null";
+                        if (a.toString().length()>200) System.out.print("\""+a.toString().substring(0, 50)+"\", ");
+                        else System.out.print("\""+a +"\", ");
+                    }
+                    System.out.println();
+                }
+            } else {
+                System.out.println("No se encontraron resultados.");
+            }
+
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Realiza una consulta para obtener un registro específico
+     * de una tabla en la base de datos.
+     * @param tabla el nombre de la tabla.
+     * @param id    el identificador del registro a buscar.
+     */
+    public void select1(String tabla, int id){
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        try {
+            entityManager.getTransaction().begin();
+
+            // Ejecutar la consulta SQL nativa
+            Query query = entityManager.createNativeQuery("SELECT * FROM " + tabla + " WHERE id = "+id);
+
+            List<Object[]> results = query.getResultList();
+            if (!results.isEmpty()) {
+                for (Object[] result : results) {
+                    for (Object a: result){
+                        if (a==null)a="null";
+                        if (a.toString().length()>200) System.out.print("\""+a.toString().substring(0, 50)+"\", ");
+                        else System.out.print("\""+a +"\", ");
+                    }
+                    System.out.println();
+                }
+            } else {
+                System.out.println("No se encontraron resultados.");
+            }
+
+            entityManager.getTransaction().commit();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Elimina un registro de una tabla en la base de datos.
+     * @param tabla el nombre de la tabla.
+     * @param id    el identificador del registro a eliminar.
+     */
     public void eliminarEntidad(String tabla,int id) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         EntityTransaction transaction = entityManager.getTransaction();
@@ -212,6 +356,16 @@ public class Controller {
         }
     }
 
+    /**
+     * Actualiza registros en una tabla de la base de datos.
+     * @param tabla    el nombre de la tabla en la que se actualizarán los registros.
+     * @param columna  el nombre de la columna que se actualizará.
+     * @param condicion la condición para aplicar la actualización (por ejemplo, "LIKE", "=", "<").
+     * @param update   el nuevo valor que se asignará a la columna.
+     * @param columa2  el nombre de la columna en la que se aplicará la condición.
+     * @param text     el texto que se comparará con los registros en la columna de condición.
+     * @throws SQLException si ocurre un error al ejecutar la consulta SQL.
+     */
     public void update(String tabla, String columna, String condicion, String update, String columa2, String text) throws SQLException {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         try {
@@ -227,6 +381,10 @@ public class Controller {
         }
     }
 
+    /**
+     * Elimina una tabla completa de la base de datos.
+     * @param tabla el nombre de la tabla a eliminar.
+     */
     public void borrarTabla(String tabla){
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
@@ -245,6 +403,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Elimina todas las tablas de la base de datos.
+     */
     public void borrarTablas(){
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         Query query = entityManager.createNativeQuery("SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname='public'");
@@ -266,10 +427,19 @@ public class Controller {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Crea las tablas en la base de datos.
+     */
     public void crearTablas(){
         EntityManagerFactory entityManagerFactory = createEntityManagerFactory();
     }
 
+    /**
+     * Crea un objeto EntityManagerFactory.
+     * @return EntityManagerFactory - el objeto EntityManagerFactory creado.
+     * @throws ExceptionInInitializerError si no se puede crear el EntityManagerFactory.
+     */
     public EntityManagerFactory createEntityManagerFactory() {
         EntityManagerFactory emf;
         try {
@@ -281,26 +451,21 @@ public class Controller {
         return emf;
     }
 
+    /**
+     * Puebla la base de datos con los datos
+     * leídos de los archivos CSV.
+     */
     public void poblar(){
         generoController.addGeneros(generos);
-        estuidoController.addEstudios(estudios);
+        estudioController.addEstudios(estudios);
         serieController.addSeries(series);
     }
     public List<Genero> getGeneros() {
         return generos;
     }
 
-    public List<Estudio> getEstudios() {
-        return estudios;
-    }
-
-    public List<Serie> getSeries() {
-        return series;
-    }
-
-
     /**
-     * Lee un numero escrito por el usuario.
+     * Lee un número escrito por el usuario.
      * @return Un int escrito por el usuario.
      */
     public int nextInt(){

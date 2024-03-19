@@ -106,6 +106,10 @@ public class Estudio implements Serializable {
     }
 
 
+    /**
+     * toString de la clase.
+     * @return La clase en formato textual
+     */
     @Override
     public String toString() {
         return "Estudio{" +

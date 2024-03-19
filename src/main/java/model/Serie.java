@@ -16,7 +16,6 @@ public class Serie {
      * Identificador de la clase.
      */
     @Id
-    @Column(name = "id_serie")
     protected int id;
     /**
      * Nombre principal de la serie.
@@ -114,7 +113,9 @@ public class Serie {
      * @param episodios Cantidad de episodios.
      * @param estado Estado de emisión.
      * @param fechaEstreno Fecha de salida.
-     * @param licencia licencias de la serie.
+     * @param estudios Lista de estudios de la serie.
+     * @param licencia Licencias de la serie.
+     * @param generos Lista de generos de la serie.
      * @param src Lugar del que se ha sacado el material para adaptar la serie.
      * @param duracion Duración por episodio.
      * @param descripcion Sinopsis o resumen.
@@ -267,6 +268,10 @@ public class Serie {
         return descripcion;
     }
 
+    /**
+     * toString de la clase con un limitador.
+     * @return La clase en formato textual
+     */
     @Override
     public String toString() {
         return "Serie{" +

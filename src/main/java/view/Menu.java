@@ -8,30 +8,37 @@ import javax.persistence.EntityManagerFactory;
 import java.io.IOException;
 import java.sql.SQLException;
 
+/**
+ * Esta clase representa el menú de la aplicación.
+ * Contiene métodos para mostrar el menú principal,
+ * interactuar con las tablas de la base de datos,
+ * y manejar las opciones seleccionadas por el usuario.
+ */
 public class Menu {
     /**
      * Sirve para mantener el programa activo.
      */
     private boolean continua =  true;
+    /**
+     * Controlador de la aplicación.
+     */
     private Controller c;
-    private SerieController serieController;
-    private EstuidoController estuidoController;
-    private GeneroController generoController;
 
+    /**
+     * Constructor de la clase Menu.
+     * @param entityManagerFactory el EntityManagerFactory para interactuar con la base de datos.
+     * @throws CsvValidationException si ocurre un error de validación de CSV.
+     * @throws IOException si ocurre un error de E/S durante la ejecución del programa.
+     */
     public Menu(EntityManagerFactory entityManagerFactory) throws CsvValidationException, IOException {
         super();
         c = new Controller(entityManagerFactory);
-        serieController = new SerieController(entityManagerFactory);
-        estuidoController = new EstuidoController(entityManagerFactory);
-        generoController = new GeneroController(entityManagerFactory);
     }
 
     /**
-     * Método que inicia el menú principal del programa ACB.
-//     * @throws SQLException Si ocurre un error de SQL al
-     * interactuar con la base de datos.
-     * @throws IOException Si ocurre un error de entrada/salida
-     * durante la ejecución del programa.
+     * Método que inicia el menú principal del programa.
+     * @throws IOException si ocurre un error de E/S durante la ejecución del programa.
+     * @throws SQLException si ocurre un error de SQL al interactuar con la base de datos.
      */
     public void mainMenu() throws IOException, SQLException {;
 
@@ -55,10 +62,18 @@ public class Menu {
         }
     }
 
+    /**
+     * Método que devuelve el nombre de una tabla del menú.
+     * @return el nombre de la tabla seleccionada por el usuario.
+     */
     public String menuTable(){
         return (String) c.mostrarTablas().get(c.nextInt());
     }
 
+    /**
+     * Método que muestra el menú de opciones de condición.
+     * @return la opción de condición seleccionada por el usuario.
+     */
     public String menuCondicion(){
         System.out.println(" \nElige una condición \n");
 
@@ -69,9 +84,15 @@ public class Menu {
         return oCondicion(c.nextInt());
     }
 
+    /**
+     * Método que convierte el número de condición
+     * seleccionado por el usuario en su representación textual.
+     * @param o el número de condición seleccionado.
+     * @return la representación textual de la condición.
+     */
     public String oCondicion(int o){
         if(o==1){
-            return "LIKR";
+            return "LIKE";
         }else if(o==2){
             return "=";
         }else if(o==3){
@@ -83,6 +104,11 @@ public class Menu {
         }
     }
 
+    /**
+     * Método que muestra el menú de columnas para una tabla.
+     * @param tabla el nombre de la tabla.
+     * @return el nombre de la columna seleccionada por el usuario.
+     */
     public String menuColumnas(String tabla){
         return (String) c.mostrarColumnas(tabla).get(c.nextInt());
     }
@@ -137,16 +163,29 @@ public class Menu {
             }
             System.out.println("Pulsa "+ConsoleColors.GREEN+"enter"+ConsoleColors.RESET+" para continuar");
             c.nextLine();
-        }/*else if(o==7){
-            c.selectCondicion();
+        }else if(o==7){
+            System.out.println("Elige una tabla");
+            String tabla = menuTable();
+            String condicion = menuCondicion();
+            System.out.println("Elige una columna para la condición");
+            String columna2 = menuColumnas(tabla);
+            c.nextLine();
+            System.out.println("Escribe el texto de la condición");
+            String text = c.nextLine();
+            System.out.println(tabla+", "+condicion+", "+columna2+", "+text);
+            c.selectCondicion(tabla,condicion, columna2, text);
             System.out.println("Pulsa "+ConsoleColors.GREEN+"enter"+ConsoleColors.RESET+" para continuar");
             c.nextLine();
         }else if(o==8){
-            c.selectElemento();
+            System.out.println("Elige una tabla");
+            String tabla = menuTable();
+            System.out.println("Escribe la id del elemento que buscas");
+            int id = c.nextInt();
+            c.select1(tabla, id);
             System.out.println("Pulsa "+ConsoleColors.GREEN+"enter"+ConsoleColors.RESET+" para continuar");
             c.nextLine();
             c.nextLine();
-        }*/else if(o==9){
+        }else if(o==9){
             System.out.println("Elige una tabla");
             String tabla = menuTable();
             System.out.println("Elige una columna");
@@ -160,7 +199,6 @@ public class Menu {
             c.nextLine();
             System.out.println("Escribe el texto de la condición");
             String text = c.nextLine();
-            System.out.println(tabla+", "+columna+", "+condicion+", "+update+", "+columna2+", "+text);
             c.update(tabla, columna, condicion, update, columna2, text);
             System.out.println("Datos actualizados");
             System.out.println("Pulsa "+ConsoleColors.GREEN+"enter"+ConsoleColors.RESET+" para continuar");
@@ -179,10 +217,4 @@ public class Menu {
             System.out.println("Opcion no valida");
         }
     }
-
-
-
-
-
-
 }
