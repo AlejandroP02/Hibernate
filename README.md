@@ -1,5 +1,3 @@
-# JPAMagazinesAnnotations
-
 # Programa de Gestión de Series
 
 Este proyecto es un programa de gestión de series desarrollado en Java. Permite interactuar con una base de datos para realizar operaciones CRUD (Crear, Leer, Actualizar y Eliminar) en las entidades Serie, Estudio y Género. Además, puede leer datos desde archivos CSV para poblar la base de datos y realizar consultas específicas.
@@ -17,7 +15,7 @@ Este proyecto es un programa de gestión de series desarrollado en Java. Permite
 - Apache Maven para compilar y ejecutar el proyecto.
 - Una base de datos PostgreSQL (u otro compatible con JPA) para almacenar los datos.
 
-## Configuración
+## Configuración (Ejecución sin IDE)
 
 1. Clona el repositorio a tu máquina local.
 2. Asegúrate de tener configurada una base de datos PostgreSQL y ajusta la configuración de conexión en el archivo `persistence.xml`.
