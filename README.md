@@ -15,12 +15,6 @@ Este proyecto es un programa de gestión de series desarrollado en Java. Permite
 - Apache Maven para compilar y ejecutar el proyecto.
 - Una base de datos PostgreSQL (u otro compatible con JPA) para almacenar los datos.
 
-## Configuración (Ejecución sin IDE)
-
-1. Clona el repositorio a tu máquina local.
-2. Asegúrate de tener configurada una base de datos PostgreSQL y ajusta la configuración de conexión en el archivo `persistence.xml`.
-3. Ejecuta el comando `mvn clean package` en el directorio raíz del proyecto para compilar el código y generar el archivo JAR.
-4. Ejecuta el programa con el comando `java -jar target/nombre-del-archivo.jar`.
 
 ## Uso
 
